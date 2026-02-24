@@ -178,22 +178,13 @@ namespace Tao.FixedPoint.DotNetTest
         }
 
         /// <summary>
-        /// Tan 在 Cos=0 时抛出异常
+        /// Tan(π/2) Cos 为零或极小时返回饱和值
         /// </summary>
         [TestMethod]
-        public void Tan_AtPiOver2_ThrowsOrLargeValue()
+        public void Tan_AtPiOver2_ReturnsLargeValue()
         {
-            // Cos(π/2) 在 Q10 精度下可能不完全为零，但应非常小
-            // 如果恰好为零则抛异常，否则返回极大值
-            try
-            {
-                FixedPoint result = Math.Tan(FixedPoint.PiOver2);
-                Assert.IsTrue(Math.Abs(result) > new FixedPoint(100));
-            }
-            catch (DivideByZeroException)
-            {
-                // 预期行为：Cos 恰好为零时抛出
-            }
+            FixedPoint result = Math.Tan(FixedPoint.PiOver2);
+            Assert.IsTrue(Math.Abs(result) > new FixedPoint(100));
         }
 
         #endregion

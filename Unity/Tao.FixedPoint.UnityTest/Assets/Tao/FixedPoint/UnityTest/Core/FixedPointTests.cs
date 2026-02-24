@@ -246,12 +246,27 @@ namespace Tao.FixedPoint.UnityTest
         }
 
         [Test]
-        public void Operator_Div_ByZero_Throws()
+        public void Operator_Div_ByZero_PositiveSaturates()
         {
-            Assert.Throws<DivideByZeroException>(() =>
-            {
-                FixedPoint _ = new FixedPoint(1) / FixedPoint.Zero;
-            });
+            Assert.AreEqual(FixedPoint.MaxValue, new FixedPoint(1) / FixedPoint.Zero);
+        }
+
+        [Test]
+        public void Operator_Div_ByZero_NegativeSaturates()
+        {
+            Assert.AreEqual(FixedPoint.MinValue, new FixedPoint(-1) / FixedPoint.Zero);
+        }
+
+        [Test]
+        public void Operator_Div_ByZero_ZeroReturnsZero()
+        {
+            Assert.AreEqual(FixedPoint.Zero, FixedPoint.Zero / FixedPoint.Zero);
+        }
+
+        [Test]
+        public void Operator_Div_Overflow_Saturates()
+        {
+            Assert.AreEqual(FixedPoint.MaxValue, FixedPoint.MaxValue / FixedPoint.Epsilon);
         }
 
         [Test]
@@ -263,12 +278,9 @@ namespace Tao.FixedPoint.UnityTest
         }
 
         [Test]
-        public void Operator_Mod_ByZero_Throws()
+        public void Operator_Mod_ByZero_ReturnsZero()
         {
-            Assert.Throws<DivideByZeroException>(() =>
-            {
-                FixedPoint _ = new FixedPoint(1) % FixedPoint.Zero;
-            });
+            Assert.AreEqual(FixedPoint.Zero, new FixedPoint(7) % FixedPoint.Zero);
         }
 
         [Test]

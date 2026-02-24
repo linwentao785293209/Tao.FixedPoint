@@ -266,12 +266,9 @@ namespace Tao.FixedPoint.UnityTest
         }
 
         [Test]
-        public void Rcp_Zero_Throws()
+        public void Rcp_Zero_ReturnsMaxValue()
         {
-            Assert.Throws<DivideByZeroException>(() =>
-            {
-                Math.Rcp(FixedPoint.Zero);
-            });
+            Assert.AreEqual(FixedPoint.MaxValue, Math.Rcp(FixedPoint.Zero));
         }
 
         #endregion

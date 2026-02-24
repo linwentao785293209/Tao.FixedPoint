@@ -265,7 +265,7 @@ namespace Tao.FixedPoint
         }
 
         /// <summary>
-        /// 定点数除法
+        /// 定点数除法 (除零和溢出均做饱和处理)
         /// </summary>
         /// <param name="a">被除数</param>
         /// <param name="b">除数</param>
@@ -273,7 +273,9 @@ namespace Tao.FixedPoint
         {
             if (b._fixedValue == 0)
             {
-                throw new DivideByZeroException("除数不能为0");
+                // 除零饱和：0/0 → 0，非零/0 → 按被除数符号饱和
+                if (a._fixedValue == 0) return Zero;
+                return new FixedPoint(a._fixedValue > 0 ? MAX_VALUE : MIN_VALUE);
             }
 
             // 有效范围内的值左移 BIT_MOVE_COUNT 后不会溢出 long
@@ -283,17 +285,14 @@ namespace Tao.FixedPoint
         }
 
         /// <summary>
-        /// 定点数取模
+        /// 定点数取模 (除零返回零)
         /// </summary>
         /// <param name="a">被除数</param>
         /// <param name="b">除数</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FixedPoint operator %(FixedPoint a, FixedPoint b)
         {
-            if (b._fixedValue == 0)
-            {
-                throw new DivideByZeroException("除数不能为0");
-            }
+            if (b._fixedValue == 0) return Zero;
 
             return new FixedPoint(a._fixedValue % b._fixedValue);
         }

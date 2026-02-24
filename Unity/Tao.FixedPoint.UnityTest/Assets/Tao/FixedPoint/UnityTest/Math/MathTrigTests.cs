@@ -132,17 +132,10 @@ namespace Tao.FixedPoint.UnityTest
         }
 
         [Test]
-        public void Tan_AtPiOver2_ThrowsOrLargeValue()
+        public void Tan_AtPiOver2_ReturnsLargeValue()
         {
-            try
-            {
-                FixedPoint result = Math.Tan(FixedPoint.PiOver2);
-                Assert.IsTrue(Math.Abs(result) > new FixedPoint(100));
-            }
-            catch (System.DivideByZeroException)
-            {
-                // Cos 恰好为零时抛出
-            }
+            FixedPoint result = Math.Tan(FixedPoint.PiOver2);
+            Assert.IsTrue(Math.Abs(result) > new FixedPoint(100));
         }
 
         #endregion

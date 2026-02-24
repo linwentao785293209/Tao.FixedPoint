@@ -323,13 +323,39 @@ namespace Tao.FixedPoint.DotNetTest
         }
 
         /// <summary>
-        /// 除法: 除以零抛出异常
+        /// 除法: 正数除以零返回 MaxValue (饱和)
         /// </summary>
         [TestMethod]
-        [ExpectedException(typeof(DivideByZeroException))]
-        public void Operator_Div_ByZero_Throws()
+        public void Operator_Div_ByZero_PositiveSaturates()
         {
-            FixedPoint _ = new FixedPoint(1) / FixedPoint.Zero;
+            Assert.AreEqual(FixedPoint.MaxValue, new FixedPoint(1) / FixedPoint.Zero);
+        }
+
+        /// <summary>
+        /// 除法: 负数除以零返回 MinValue (饱和)
+        /// </summary>
+        [TestMethod]
+        public void Operator_Div_ByZero_NegativeSaturates()
+        {
+            Assert.AreEqual(FixedPoint.MinValue, new FixedPoint(-1) / FixedPoint.Zero);
+        }
+
+        /// <summary>
+        /// 除法: 零除以零返回零
+        /// </summary>
+        [TestMethod]
+        public void Operator_Div_ByZero_ZeroReturnsZero()
+        {
+            Assert.AreEqual(FixedPoint.Zero, FixedPoint.Zero / FixedPoint.Zero);
+        }
+
+        /// <summary>
+        /// 除法: 大值除以极小值溢出时饱和
+        /// </summary>
+        [TestMethod]
+        public void Operator_Div_Overflow_Saturates()
+        {
+            Assert.AreEqual(FixedPoint.MaxValue, FixedPoint.MaxValue / FixedPoint.Epsilon);
         }
 
         /// <summary>
@@ -344,13 +370,12 @@ namespace Tao.FixedPoint.DotNetTest
         }
 
         /// <summary>
-        /// 取模: 除以零抛出异常
+        /// 取模: 除以零返回零 (饱和处理)
         /// </summary>
         [TestMethod]
-        [ExpectedException(typeof(DivideByZeroException))]
-        public void Operator_Mod_ByZero_Throws()
+        public void Operator_Mod_ByZero_ReturnsZero()
         {
-            FixedPoint _ = new FixedPoint(1) % FixedPoint.Zero;
+            Assert.AreEqual(FixedPoint.Zero, new FixedPoint(7) % FixedPoint.Zero);
         }
 
         /// <summary>

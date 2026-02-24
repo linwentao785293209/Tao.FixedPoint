@@ -604,18 +604,12 @@ namespace Tao.FixedPoint
         }
 
         /// <summary>
-        /// 正切 (Sin / Cos)
+        /// 正切 (Sin / Cos，cos 为零时除法自动饱和)
         /// </summary>
         /// <param name="radians">弧度值</param>
         public static FixedPoint Tan(FixedPoint radians)
         {
-            FixedPoint cos = Cos(radians);
-            if (cos.FixedValue == 0)
-            {
-                throw new DivideByZeroException("Tan 在该角度处无定义");
-            }
-
-            return Sin(radians) / cos;
+            return Sin(radians) / Cos(radians);
         }
 
         /// <summary>

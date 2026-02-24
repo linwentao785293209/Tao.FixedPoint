@@ -354,13 +354,12 @@ namespace Tao.FixedPoint.DotNetTest
         }
 
         /// <summary>
-        /// Rcp(0) 除以零抛出异常
+        /// Rcp(0) 除以零返回 MaxValue (饱和处理)
         /// </summary>
         [TestMethod]
-        [ExpectedException(typeof(DivideByZeroException))]
-        public void Rcp_Zero_Throws()
+        public void Rcp_Zero_ReturnsMaxValue()
         {
-            Math.Rcp(FixedPoint.Zero);
+            Assert.AreEqual(FixedPoint.MaxValue, Math.Rcp(FixedPoint.Zero));
         }
 
         #endregion
