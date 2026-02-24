@@ -244,6 +244,7 @@ namespace Tao.FixedPoint
         /// </summary>
         /// <param name="a">左操作数</param>
         /// <param name="b">右操作数</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FixedPoint operator *(FixedPoint a, FixedPoint b)
         {
             long leftValue = a._fixedValue;
@@ -269,6 +270,7 @@ namespace Tao.FixedPoint
         /// </summary>
         /// <param name="a">被除数</param>
         /// <param name="b">除数</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FixedPoint operator /(FixedPoint a, FixedPoint b)
         {
             if (b._fixedValue == 0)
@@ -302,6 +304,7 @@ namespace Tao.FixedPoint
         /// </summary>
         /// <param name="a">输入值</param>
         /// <param name="count">位移位数</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FixedPoint operator <<(FixedPoint a, int count)
         {
             long fixedValue = a._fixedValue;

@@ -4,6 +4,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tao.FixedPoint", "DotNet\Ta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tao.FixedPoint.DotNetTest", "DotNet\Tao.FixedPoint.DotNetTest\Tao.FixedPoint.DotNetTest.csproj", "{50D43129-4776-47B5-9B1C-BB677F6A88D1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tao.FixedPoint", "Unity\Tao.FixedPoint.UnityTest\Tao.FixedPoint.csproj", "{D0ABCBBF-BA21-0DA9-5FFF-0E83132B95F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Unity\Tao.FixedPoint.UnityTest\Assembly-CSharp.csproj", "{109388D6-9057-FF9C-84ED-6F1AABA8CBF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tao.FixedPoint.UnityTest", "Unity\Tao.FixedPoint.UnityTest\Tao.FixedPoint.UnityTest.csproj", "{A4196D73-50A8-5A00-A9A6-D9B5D80AF618}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +24,17 @@ Global
 		{50D43129-4776-47B5-9B1C-BB677F6A88D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{50D43129-4776-47B5-9B1C-BB677F6A88D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{50D43129-4776-47B5-9B1C-BB677F6A88D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0ABCBBF-BA21-0DA9-5FFF-0E83132B95F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0ABCBBF-BA21-0DA9-5FFF-0E83132B95F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0ABCBBF-BA21-0DA9-5FFF-0E83132B95F7}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0ABCBBF-BA21-0DA9-5FFF-0E83132B95F7}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{109388D6-9057-FF9C-84ED-6F1AABA8CBF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{109388D6-9057-FF9C-84ED-6F1AABA8CBF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{109388D6-9057-FF9C-84ED-6F1AABA8CBF8}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{109388D6-9057-FF9C-84ED-6F1AABA8CBF8}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{A4196D73-50A8-5A00-A9A6-D9B5D80AF618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4196D73-50A8-5A00-A9A6-D9B5D80AF618}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4196D73-50A8-5A00-A9A6-D9B5D80AF618}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4196D73-50A8-5A00-A9A6-D9B5D80AF618}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal
