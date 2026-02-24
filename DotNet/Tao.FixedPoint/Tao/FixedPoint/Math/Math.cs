@@ -672,7 +672,7 @@ namespace Tao.FixedPoint
         }
 
         /// <summary>
-        /// Atan2 内部实现，通过象限映射查找表计算角度
+        /// Atan2 内部实现，通过象限映射 + 双线性插值查找表计算角度
         /// </summary>
         /// <param name="yValue">Y 分量（定点原始值）</param>
         /// <param name="xValue">X 分量（定点原始值）</param>
@@ -723,15 +723,37 @@ namespace Tao.FixedPoint
                 angleOffset = 0;
             }
 
-            // 将 (absX, absY) 归一化到查找表索引范围 [0, dim-1]
+            // 将 (absX, absY) 归一化到查找表索引范围 [0, dim-1]，保留小数部分做双线性插值
             int tableDimension = Atan2LookupTable.Dim;
             long indexRange = tableDimension - 1L;
             long maxComponent = absX >= absY ? absX : absY;
-            int indexX = (int)Divide(absX * indexRange, maxComponent);
-            int indexY = (int)Divide(absY * indexRange, maxComponent);
-            int lookupAngle = Atan2LookupTable.Table[indexY * tableDimension + indexX];
+
+            // 整数索引（向下截断）和余数
+            long scaledX = absX * indexRange;
+            long scaledY = absY * indexRange;
+            int intX = (int)(scaledX / maxComponent);
+            int intY = (int)(scaledY / maxComponent);
+
+            // 余数缩放到 [0, MULTIPLE)，作为插值权重
+            long fracX = (scaledX - (long)intX * maxComponent) * FixedPoint.MULTIPLE / maxComponent;
+            long fracY = (scaledY - (long)intY * maxComponent) * FixedPoint.MULTIPLE / maxComponent;
+
+            // 相邻索引（边界处 frac == 0，插值自然退化为点采样）
+            int nextX = intX < (int)indexRange ? intX + 1 : intX;
+            int nextY = intY < (int)indexRange ? intY + 1 : intY;
+
+            // 四角查表 + 双线性插值：先沿 X 插值两行，再沿 Y 插值结果
+            long t00 = Atan2LookupTable.Table[intY * tableDimension + intX];
+            long t10 = Atan2LookupTable.Table[intY * tableDimension + nextX];
+            long t01 = Atan2LookupTable.Table[nextY * tableDimension + intX];
+            long t11 = Atan2LookupTable.Table[nextY * tableDimension + nextX];
+
+            long row0 = t00 + (t10 - t00) * fracX / FixedPoint.MULTIPLE;
+            long row1 = t01 + (t11 - t01) * fracX / FixedPoint.MULTIPLE;
+            long lookupAngle = row0 + (row1 - row0) * fracY / FixedPoint.MULTIPLE;
+
             return new FixedPoint(
-                Divide((long)(lookupAngle + angleOffset) * signMultiplier * FixedPoint.MULTIPLE, LOOKUP_FACTOR));
+                Divide((lookupAngle + angleOffset) * signMultiplier * FixedPoint.MULTIPLE, LOOKUP_FACTOR));
         }
 
         #endregion
