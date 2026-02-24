@@ -1,0 +1,23 @@
+{
+    "name": "Tao.FixedPoint.UnityTest",
+    "rootNamespace": "Tao.FixedPoint.UnityTest",
+    "references": [
+        "GUID:d1d9e8d9e2f941546a166107c6242f01",
+        "GUID:0acc523941302664db1f4e527237feb3"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

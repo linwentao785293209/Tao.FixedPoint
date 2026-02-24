@@ -1,17 +1,16 @@
-namespace Tao.FixedPoint.DotNetTest
+using NUnit.Framework;
+
+namespace Tao.FixedPoint.UnityTest
 {
     /// <summary>
     /// Vector3 测试：构造、运算符、叉积、距离、归一化、投影、反射等
     /// </summary>
-    [TestClass]
-    public sealed class Vector3Tests
+    [TestFixture]
+    public class Vector3Tests
     {
         #region 构造与静态属性
 
-        /// <summary>
-        /// 三分量构造函数
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Constructor_ThreeComponents()
         {
             Vector3 v = new Vector3(new FixedPoint(1), new FixedPoint(2), new FixedPoint(3));
@@ -20,20 +19,14 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.AreEqual(new FixedPoint(3).FixedValue, v.z.FixedValue);
         }
 
-        /// <summary>
-        /// 二分量构造函数 (z=0)
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Constructor_TwoComponents_ZIsZero()
         {
             Vector3 v = new Vector3(new FixedPoint(1), new FixedPoint(2));
             Assert.AreEqual(FixedPoint.Zero, v.z);
         }
 
-        /// <summary>
-        /// 静态方向属性
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void StaticProperties_CorrectDirections()
         {
             Assert.AreEqual(FixedPoint.One, Vector3.Forward.z);
@@ -48,10 +41,7 @@ namespace Tao.FixedPoint.DotNetTest
 
         #region 点积 / 叉积
 
-        /// <summary>
-        /// 点积计算
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Dot_ReturnsCorrectValue()
         {
             Vector3 a = new Vector3(new FixedPoint(1), new FixedPoint(2), new FixedPoint(3));
@@ -59,10 +49,7 @@ namespace Tao.FixedPoint.DotNetTest
             TestHelper.AssertApprox(Vector3.Dot(a, b), 32.0, 0.1);
         }
 
-        /// <summary>
-        /// 正交向量叉积: Right × Up = Forward
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Cross_RightUp_ReturnsForward()
         {
             Vector3 result = Vector3.Cross(Vector3.Right, Vector3.Up);
@@ -71,10 +58,7 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.AreEqual(FixedPoint.One, result.z);
         }
 
-        /// <summary>
-        /// 叉积反交换: a × b = -(b × a)
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Cross_AntiCommutative()
         {
             Vector3 a = new Vector3(new FixedPoint(1), new FixedPoint(2), new FixedPoint(3));
@@ -86,10 +70,7 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.AreEqual(-ab.z.FixedValue, ba.z.FixedValue);
         }
 
-        /// <summary>
-        /// 平行向量叉积为零
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Cross_Parallel_ReturnsZero()
         {
             Vector3 a = new Vector3(new FixedPoint(2), new FixedPoint(0), new FixedPoint(0));
@@ -102,20 +83,14 @@ namespace Tao.FixedPoint.DotNetTest
 
         #region 长度 / 距离 / 归一化
 
-        /// <summary>
-        /// 3-4-5 扩展到 3D 的长度
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Magnitude_Known_ReturnsCorrect()
         {
             Vector3 v = new Vector3(new FixedPoint(2), new FixedPoint(3), new FixedPoint(6));
             TestHelper.AssertApprox(v.Magnitude, 7.0, 0.01);
         }
 
-        /// <summary>
-        /// 两点距离
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Distance_ReturnsCorrectValue()
         {
             Vector3 a = Vector3.Zero;
@@ -123,10 +98,7 @@ namespace Tao.FixedPoint.DotNetTest
             TestHelper.AssertApprox(Vector3.Distance(a, b), 7.0, 0.01);
         }
 
-        /// <summary>
-        /// 归一化后长度为 1
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Normalize_UnitLength()
         {
             Vector3 v = new Vector3(new FixedPoint(3), new FixedPoint(4), new FixedPoint(0));
@@ -134,19 +106,13 @@ namespace Tao.FixedPoint.DotNetTest
             TestHelper.AssertApprox(normalized.Magnitude, 1.0, 0.01);
         }
 
-        /// <summary>
-        /// 零向量归一化返回零
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Normalize_ZeroVector_ReturnsZero()
         {
             Assert.AreEqual(Vector3.Zero, Vector3.Normalize(Vector3.Zero));
         }
 
-        /// <summary>
-        /// Normalized 属性与静态方法一致
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Normalized_Property_MatchesStatic()
         {
             Vector3 v = new Vector3(new FixedPoint(3), new FixedPoint(4), new FixedPoint(5));
@@ -161,10 +127,7 @@ namespace Tao.FixedPoint.DotNetTest
 
         #region 投影 / 反射
 
-        /// <summary>
-        /// Project 投影到坐标轴
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Project_OntoAxis_ReturnsComponent()
         {
             Vector3 v = new Vector3(new FixedPoint(3), new FixedPoint(4), new FixedPoint(5));
@@ -174,10 +137,7 @@ namespace Tao.FixedPoint.DotNetTest
             TestHelper.AssertApprox(proj.z, 0.0, 0.01);
         }
 
-        /// <summary>
-        /// ProjectOnPlane 投影到 XZ 平面去除 Y 分量
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void ProjectOnPlane_RemovesNormalComponent()
         {
             Vector3 v = new Vector3(new FixedPoint(3), new FixedPoint(4), new FixedPoint(5));
@@ -187,10 +147,7 @@ namespace Tao.FixedPoint.DotNetTest
             TestHelper.AssertApprox(proj.z, 5.0, 0.01);
         }
 
-        /// <summary>
-        /// 反射: 向下入射 XY 平面
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Reflect_DownOnUp_ReflectsUp()
         {
             Vector3 inDir = new Vector3(FixedPoint.One, FixedPoint.NegativeOne, FixedPoint.Zero);
@@ -204,10 +161,7 @@ namespace Tao.FixedPoint.DotNetTest
 
         #region Lerp / MoveTowards / ClampMagnitude
 
-        /// <summary>
-        /// Lerp t=0.5 返回中点
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Lerp_Half_ReturnsMidpoint()
         {
             Vector3 a = Vector3.Zero;
@@ -216,10 +170,7 @@ namespace Tao.FixedPoint.DotNetTest
             TestHelper.AssertApprox(result, 5.0, 5.0, 5.0, 0.01);
         }
 
-        /// <summary>
-        /// MoveTowards 在目标范围内直接到达
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void MoveTowards_CloseEnough_ReachesTarget()
         {
             Vector3 current = Vector3.Zero;
@@ -228,10 +179,7 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.AreEqual(target, result);
         }
 
-        /// <summary>
-        /// ClampMagnitude 限制长度
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void ClampMagnitude_LongVector_Clamped()
         {
             Vector3 v = new Vector3(new FixedPoint(30), new FixedPoint(40), new FixedPoint(0));
@@ -243,28 +191,19 @@ namespace Tao.FixedPoint.DotNetTest
 
         #region Angle / SignedAngle
 
-        /// <summary>
-        /// 正交轴之间角度为 90°
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Angle_Orthogonal_Returns90()
         {
             TestHelper.AssertApprox(Vector3.Angle(Vector3.Right, Vector3.Up), 90.0, 1.0);
         }
 
-        /// <summary>
-        /// 同向角度为 0°
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Angle_SameDirection_ReturnsZero()
         {
             TestHelper.AssertApprox(Vector3.Angle(Vector3.Right, Vector3.Right), 0.0, 0.5);
         }
 
-        /// <summary>
-        /// 反向角度为 180°
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Angle_Opposite_Returns180()
         {
             TestHelper.AssertApprox(Vector3.Angle(Vector3.Right, Vector3.Left), 180.0, 1.0);
@@ -274,10 +213,7 @@ namespace Tao.FixedPoint.DotNetTest
 
         #region 运算符 / 索引器 / Equals
 
-        /// <summary>
-        /// 标量左乘与右乘等价
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Operator_ScalarMul_Commutative()
         {
             Vector3 v = new Vector3(new FixedPoint(1), new FixedPoint(2), new FixedPoint(3));
@@ -285,10 +221,7 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.AreEqual(v * s, s * v);
         }
 
-        /// <summary>
-        /// 索引器访问
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Indexer_GetSet()
         {
             Vector3 v = new Vector3(new FixedPoint(1), new FixedPoint(2), new FixedPoint(3));
@@ -297,10 +230,7 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.AreEqual(new FixedPoint(3).FixedValue, v[2].FixedValue);
         }
 
-        /// <summary>
-        /// Equals 和 GetHashCode 一致性
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Equals_HashCode_Consistent()
         {
             Vector3 a = new Vector3(new FixedPoint(1), new FixedPoint(2), new FixedPoint(3));
@@ -313,10 +243,7 @@ namespace Tao.FixedPoint.DotNetTest
 
         #region Exclude / AngleBetween
 
-        /// <summary>
-        /// Exclude 等同于 ProjectOnPlane
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Exclude_EqualsProjectOnPlane()
         {
             Vector3 v = new Vector3(new FixedPoint(3), new FixedPoint(4), new FixedPoint(5));
@@ -325,10 +252,7 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.AreEqual(projected, excluded);
         }
 
-        /// <summary>
-        /// AngleBetween 返回弧度角
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void AngleBetween_Orthogonal_ReturnsPiOver2()
         {
             FixedPoint radians = Vector3.AngleBetween(Vector3.Right, Vector3.Up);
@@ -339,10 +263,7 @@ namespace Tao.FixedPoint.DotNetTest
 
         #region 补充覆盖
 
-        /// <summary>
-        /// Set 方法设置分量
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Set_UpdatesComponents()
         {
             Vector3 v = Vector3.Zero;
@@ -352,10 +273,7 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.AreEqual(new FixedPoint(5).FixedValue, v.z.FixedValue);
         }
 
-        /// <summary>
-        /// Scale 实例方法分量相乘
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Scale_Instance_MultipliesComponents()
         {
             Vector3 v = new Vector3(new FixedPoint(2), new FixedPoint(3), new FixedPoint(4));
@@ -365,10 +283,7 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.AreEqual(new FixedPoint(28).FixedValue, v.z.FixedValue);
         }
 
-        /// <summary>
-        /// Scale 静态方法分量相乘
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Scale_Static_MultipliesComponents()
         {
             Vector3 a = new Vector3(new FixedPoint(2), new FixedPoint(3), new FixedPoint(4));
@@ -379,20 +294,14 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.AreEqual(new FixedPoint(28).FixedValue, result.z.FixedValue);
         }
 
-        /// <summary>
-        /// SignedAngle 绕 Y 轴从 Right 到 Forward 为负（右手系：沿 axis 看顺时针为负）
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void SignedAngle_RightToForward_AroundUp()
         {
             FixedPoint angle = Vector3.SignedAngle(Vector3.Right, Vector3.Forward, Vector3.Up);
-            TestHelper.AssertApprox(angle, -90.0, 0.01); // 正交时 Angle 特判精确 90°，此处应为精确 -90
+            TestHelper.AssertApprox(angle, -90.0, 0.01);
         }
 
-        /// <summary>
-        /// LerpUnclamped t=2 外推
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void LerpUnclamped_T2_Extrapolates()
         {
             Vector3 a = Vector3.Zero;
@@ -401,10 +310,7 @@ namespace Tao.FixedPoint.DotNetTest
             TestHelper.AssertApprox(result.x, 20.0, 0.01);
         }
 
-        /// <summary>
-        /// Min 返回分量最小值
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Min_ReturnsComponentMin()
         {
             Vector3 a = new Vector3(new FixedPoint(1), new FixedPoint(5), new FixedPoint(3));
@@ -415,10 +321,7 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.AreEqual(new FixedPoint(3).FixedValue, result.z.FixedValue);
         }
 
-        /// <summary>
-        /// Max 返回分量最大值
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void Max_ReturnsComponentMax()
         {
             Vector3 a = new Vector3(new FixedPoint(1), new FixedPoint(5), new FixedPoint(3));
@@ -429,10 +332,7 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.AreEqual(new FixedPoint(7).FixedValue, result.z.FixedValue);
         }
 
-        /// <summary>
-        /// SmoothDamp 朝目标方向移动
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void SmoothDamp_MovesTowardsTarget()
         {
             Vector3 current = Vector3.Zero;
@@ -445,10 +345,7 @@ namespace Tao.FixedPoint.DotNetTest
             Assert.IsTrue(result.x > FixedPoint.Zero, "Should move towards target");
         }
 
-        /// <summary>
-        /// ToString 返回非空字符串
-        /// </summary>
-        [TestMethod]
+        [Test]
         public void ToString_ReturnsNonEmpty()
         {
             Vector3 v = new Vector3(new FixedPoint(1), new FixedPoint(2), new FixedPoint(3));
