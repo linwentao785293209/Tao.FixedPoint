@@ -1,7 +1,7 @@
 namespace Tao.FixedPoint.DotNetTest
 {
     /// <summary>
-    /// 角度与周期函数测试：DegreesToRadians, RadiansToDegrees, DeltaAngle, LerpAngle, MoveTowardsAngle, Repeat, PingPong
+    /// 角度与周期函数测试：DegreesToRadians, RadiansToDegrees, NormalizeRadians, DeltaAngle, LerpAngle, MoveTowardsAngle, Repeat, PingPong
     /// </summary>
     [TestClass]
     public sealed class MathAngleTests
@@ -72,6 +72,57 @@ namespace Tao.FixedPoint.DotNetTest
         public void Rad2Deg_Constant_ApproxCorrect()
         {
             TestHelper.AssertApprox(Math.Rad2Deg, 180 / System.Math.PI, 0.1);
+        }
+
+        #endregion
+
+        #region NormalizeRadians
+
+        /// <summary>
+        /// NormalizeRadians 零弧度保持不变
+        /// </summary>
+        [TestMethod]
+        public void NormalizeRadians_Zero_ReturnsZero()
+        {
+            TestHelper.AssertApprox(Math.NormalizeRadians(FixedPoint.Zero), 0.0, 0.01);
+        }
+
+        /// <summary>
+        /// NormalizeRadians π/2 保持不变
+        /// </summary>
+        [TestMethod]
+        public void NormalizeRadians_HalfPi_Unchanged()
+        {
+            TestHelper.AssertApprox(Math.NormalizeRadians(FixedPoint.PiOver2), System.Math.PI / 2, 0.01);
+        }
+
+        /// <summary>
+        /// NormalizeRadians -π/2 保持不变
+        /// </summary>
+        [TestMethod]
+        public void NormalizeRadians_NegativeHalfPi_Unchanged()
+        {
+            FixedPoint negHalfPi = FixedPoint.Zero - FixedPoint.PiOver2;
+            TestHelper.AssertApprox(Math.NormalizeRadians(negHalfPi), -System.Math.PI / 2, 0.01);
+        }
+
+        /// <summary>
+        /// NormalizeRadians 2π 归一化为 0
+        /// </summary>
+        [TestMethod]
+        public void NormalizeRadians_TwoPi_ReturnsZero()
+        {
+            TestHelper.AssertApprox(Math.NormalizeRadians(FixedPoint.TwoPi), 0.0, 0.01);
+        }
+
+        /// <summary>
+        /// NormalizeRadians 3π 归一化为 -π
+        /// </summary>
+        [TestMethod]
+        public void NormalizeRadians_ThreePi_ReturnsNegPi()
+        {
+            FixedPoint threePi = FixedPoint.Pi + FixedPoint.TwoPi;
+            TestHelper.AssertApprox(Math.NormalizeRadians(threePi), -System.Math.PI, 0.02);
         }
 
         #endregion

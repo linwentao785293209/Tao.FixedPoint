@@ -825,6 +825,20 @@ namespace Tao.FixedPoint
         }
 
         /// <summary>
+        /// 将值从 [inMin, inMax] 映射到 [outMin, outMax] (结果钳制在输出区间内)
+        /// </summary>
+        /// <param name="inMin">输入区间起点</param>
+        /// <param name="inMax">输入区间终点</param>
+        /// <param name="outMin">输出区间起点</param>
+        /// <param name="outMax">输出区间终点</param>
+        /// <param name="value">输入值</param>
+        public static FixedPoint Remap(FixedPoint inMin, FixedPoint inMax,
+            FixedPoint outMin, FixedPoint outMax, FixedPoint value)
+        {
+            return LerpUnclamped(outMin, outMax, InverseLerp(inMin, inMax, value));
+        }
+
+        /// <summary>
         /// 将 current 向 target 移动，每次最多移动 maxDelta
         /// </summary>
         /// <param name="current">当前值</param>
@@ -928,6 +942,15 @@ namespace Tao.FixedPoint
             long den = FixedPoint.Pi.FixedValue;
             long half = den >> 1;
             return new FixedPoint(num >= 0 ? (num + half) / den : (num - half) / den);
+        }
+
+        /// <summary>
+        /// 将弧度归一化到 [-π, π) 范围内
+        /// </summary>
+        /// <param name="radians">弧度值</param>
+        public static FixedPoint NormalizeRadians(FixedPoint radians)
+        {
+            return Repeat(radians + FixedPoint.Pi, FixedPoint.TwoPi) - FixedPoint.Pi;
         }
 
         /// <summary>

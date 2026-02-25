@@ -1,7 +1,7 @@
 namespace Tao.FixedPoint.DotNetTest
 {
     /// <summary>
-    /// 插值与比较函数测试：Lerp, LerpUnclamped, InverseLerp, MoveTowards, SmoothStep, SmoothDamp, Approximately
+    /// 插值与比较函数测试：Lerp, LerpUnclamped, InverseLerp, Remap, MoveTowards, SmoothStep, SmoothDamp, Approximately
     /// </summary>
     [TestClass]
     public sealed class MathInterpolationTests
@@ -128,6 +128,60 @@ namespace Tao.FixedPoint.DotNetTest
             FixedPoint above = Math.InverseLerp(new FixedPoint(0), new FixedPoint(10), new FixedPoint(15));
             Assert.AreEqual(FixedPoint.Zero, below);
             Assert.AreEqual(FixedPoint.One, above);
+        }
+
+        #endregion
+
+        #region Remap
+
+        /// <summary>
+        /// Remap 中点映射
+        /// </summary>
+        [TestMethod]
+        public void Remap_Midpoint_MapsCorrectly()
+        {
+            FixedPoint result = Math.Remap(new FixedPoint(0), new FixedPoint(10),
+                new FixedPoint(0), new FixedPoint(100), new FixedPoint(5));
+            TestHelper.AssertApprox(result, 50.0, 0.5);
+        }
+
+        /// <summary>
+        /// Remap 端点返回 outMin 和 outMax
+        /// </summary>
+        [TestMethod]
+        public void Remap_Endpoints_MapToOutputEndpoints()
+        {
+            FixedPoint atMin = Math.Remap(new FixedPoint(0), new FixedPoint(10),
+                new FixedPoint(100), new FixedPoint(200), new FixedPoint(0));
+            FixedPoint atMax = Math.Remap(new FixedPoint(0), new FixedPoint(10),
+                new FixedPoint(100), new FixedPoint(200), new FixedPoint(10));
+            TestHelper.AssertApprox(atMin, 100.0, 0.5);
+            TestHelper.AssertApprox(atMax, 200.0, 0.5);
+        }
+
+        /// <summary>
+        /// Remap 超出输入范围时结果钳制在输出区间内
+        /// </summary>
+        [TestMethod]
+        public void Remap_OutOfRange_Clamped()
+        {
+            FixedPoint below = Math.Remap(new FixedPoint(0), new FixedPoint(10),
+                new FixedPoint(100), new FixedPoint(200), new FixedPoint(-5));
+            FixedPoint above = Math.Remap(new FixedPoint(0), new FixedPoint(10),
+                new FixedPoint(100), new FixedPoint(200), new FixedPoint(15));
+            TestHelper.AssertApprox(below, 100.0, 0.5);
+            TestHelper.AssertApprox(above, 200.0, 0.5);
+        }
+
+        /// <summary>
+        /// Remap 输入区间退化 (inMin == inMax) 时返回 outMin
+        /// </summary>
+        [TestMethod]
+        public void Remap_EqualInputRange_ReturnsOutMin()
+        {
+            FixedPoint result = Math.Remap(new FixedPoint(5), new FixedPoint(5),
+                new FixedPoint(100), new FixedPoint(200), new FixedPoint(5));
+            TestHelper.AssertApprox(result, 100.0, 0.5);
         }
 
         #endregion

@@ -3,7 +3,7 @@ using NUnit.Framework;
 namespace Tao.FixedPoint.UnityTest
 {
     /// <summary>
-    /// 角度与周期函数测试：DegreesToRadians, RadiansToDegrees, DeltaAngle, LerpAngle, MoveTowardsAngle, Repeat, PingPong
+    /// 角度与周期函数测试：DegreesToRadians, RadiansToDegrees, NormalizeRadians, DeltaAngle, LerpAngle, MoveTowardsAngle, Repeat, PingPong
     /// </summary>
     [TestFixture]
     public class MathAngleTests
@@ -53,6 +53,42 @@ namespace Tao.FixedPoint.UnityTest
         public void Rad2Deg_Constant_ApproxCorrect()
         {
             TestHelper.AssertApprox(Math.Rad2Deg, 180 / System.Math.PI, 0.1);
+        }
+
+        #endregion
+
+        #region NormalizeRadians
+
+        [Test]
+        public void NormalizeRadians_Zero_ReturnsZero()
+        {
+            TestHelper.AssertApprox(Math.NormalizeRadians(FixedPoint.Zero), 0.0, 0.01);
+        }
+
+        [Test]
+        public void NormalizeRadians_HalfPi_Unchanged()
+        {
+            TestHelper.AssertApprox(Math.NormalizeRadians(FixedPoint.PiOver2), System.Math.PI / 2, 0.01);
+        }
+
+        [Test]
+        public void NormalizeRadians_NegativeHalfPi_Unchanged()
+        {
+            FixedPoint negHalfPi = FixedPoint.Zero - FixedPoint.PiOver2;
+            TestHelper.AssertApprox(Math.NormalizeRadians(negHalfPi), -System.Math.PI / 2, 0.01);
+        }
+
+        [Test]
+        public void NormalizeRadians_TwoPi_ReturnsZero()
+        {
+            TestHelper.AssertApprox(Math.NormalizeRadians(FixedPoint.TwoPi), 0.0, 0.01);
+        }
+
+        [Test]
+        public void NormalizeRadians_ThreePi_ReturnsNegPi()
+        {
+            FixedPoint threePi = FixedPoint.Pi + FixedPoint.TwoPi;
+            TestHelper.AssertApprox(Math.NormalizeRadians(threePi), -System.Math.PI, 0.02);
         }
 
         #endregion
