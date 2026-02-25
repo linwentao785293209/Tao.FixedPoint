@@ -400,7 +400,7 @@ namespace Tao.FixedPoint
         /// 判断与任意对象是否相等
         /// </summary>
         /// <param name="other">要比较的对象</param>
-        public override bool Equals(object? other)
+        public override bool Equals(object other)
         {
             return other is Matrix4x4 mat && Equals(mat);
         }

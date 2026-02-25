@@ -402,7 +402,7 @@ namespace Tao.FixedPoint
         /// 判断与任意对象是否相等
         /// </summary>
         /// <param name="obj">要比较的对象</param>
-        public override bool Equals(object? obj) => obj is FixedPoint other && _fixedValue == other._fixedValue;
+        public override bool Equals(object obj) => obj is FixedPoint other && _fixedValue == other._fixedValue;
 
         /// <summary>
         /// 返回哈希码

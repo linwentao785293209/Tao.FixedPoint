@@ -449,22 +449,22 @@ namespace Tao.FixedPoint
         /// 使用指定格式返回字符串
         /// </summary>
         /// <param name="format">格式字符串</param>
-        public string ToString(string? format) => ToString(format, null);
+        public string ToString(string format) => ToString(format, null);
 
         /// <summary>
         /// 使用指定格式和格式提供程序返回字符串
         /// </summary>
         /// <param name="format">格式字符串</param>
         /// <param name="formatProvider">格式提供程序</param>
-        public string ToString(string? format, IFormatProvider? formatProvider)
+        public string ToString(string format, IFormatProvider formatProvider)
         {
-            string? outputFormat = format;
+            string outputFormat = format;
             if (string.IsNullOrEmpty(outputFormat))
             {
                 outputFormat = "F2";
             }
 
-            IFormatProvider? outputFormatProvider = formatProvider;
+            IFormatProvider outputFormatProvider = formatProvider;
             if (outputFormatProvider == null)
             {
                 outputFormatProvider = CultureInfo.InvariantCulture.NumberFormat;
@@ -485,7 +485,7 @@ namespace Tao.FixedPoint
         /// 判断与任意对象是否相等
         /// </summary>
         /// <param name="other">要比较的对象</param>
-        public override bool Equals(object? other)
+        public override bool Equals(object other)
         {
             return other is Vector2 v && Equals(v);
         }
