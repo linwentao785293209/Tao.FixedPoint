@@ -285,6 +285,7 @@ namespace Tao.FixedPoint.DotNetTest
             TestHelper.AssertApprox(Math.Sqrt(new FixedPoint(input)), expected, 0.002);
         }
 
+
         /// <summary>
         /// 非完全平方数的 Sqrt 近似正确
         /// </summary>
