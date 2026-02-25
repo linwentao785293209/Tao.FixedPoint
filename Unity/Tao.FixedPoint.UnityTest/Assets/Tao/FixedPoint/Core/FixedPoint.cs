@@ -258,7 +258,10 @@ namespace Tao.FixedPoint
             long leftValue = a._fixedValue;
             long rightValue = b._fixedValue;
 
-            if (leftValue == 0 || rightValue == 0) return Zero;
+            if (leftValue == 0 || rightValue == 0)
+            {
+                return Zero;
+            }
 
             // 溢出检测：|left × right| 是否超出 long 范围
             long absLeft = leftValue > 0 ? leftValue : -leftValue;
@@ -284,7 +287,11 @@ namespace Tao.FixedPoint
             if (b._fixedValue == 0)
             {
                 // 除零饱和：0/0 → 0，非零/0 → 按被除数符号饱和
-                if (a._fixedValue == 0) return Zero;
+                if (a._fixedValue == 0)
+                {
+                    return Zero;
+                }
+
                 return new FixedPoint(a._fixedValue > 0 ? MAX_VALUE : MIN_VALUE);
             }
 
@@ -302,7 +309,10 @@ namespace Tao.FixedPoint
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static FixedPoint operator %(FixedPoint a, FixedPoint b)
         {
-            if (b._fixedValue == 0) return Zero;
+            if (b._fixedValue == 0)
+            {
+                return Zero;
+            }
 
             return new FixedPoint(a._fixedValue % b._fixedValue);
         }
@@ -316,7 +326,10 @@ namespace Tao.FixedPoint
         public static FixedPoint operator <<(FixedPoint a, int count)
         {
             long fixedValue = a._fixedValue;
-            if (fixedValue == 0) return a;
+            if (fixedValue == 0)
+            {
+                return a;
+            }
 
             // 防止 long 溢出导致符号翻转
             if (count >= 63
@@ -444,8 +457,16 @@ namespace Tao.FixedPoint
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static long Saturate(long value)
         {
-            if (value > MAX_VALUE) return MAX_VALUE;
-            if (value < MIN_VALUE) return MIN_VALUE;
+            if (value > MAX_VALUE)
+            {
+                return MAX_VALUE;
+            }
+
+            if (value < MIN_VALUE)
+            {
+                return MIN_VALUE;
+            }
+
             return value;
         }
 
