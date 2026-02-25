@@ -107,9 +107,17 @@ namespace Tao.FixedPoint
         public float RawFloat => (float)System.Math.Round(_fixedValue / (double)MULTIPLE, 3);
 
         /// <summary>
-        /// 还原后的 int 值 (仅用于表现层，四舍五入)
+        /// 还原后的 int 值 (纯整数四舍五入，不经过浮点运算)
         /// </summary>
-        public int RawInt => (int)System.Math.Round(_fixedValue / (double)MULTIPLE);
+        public int RawInt
+        {
+            get
+            {
+                long abs = _fixedValue >= 0 ? _fixedValue : -_fixedValue;
+                int result = (int)((abs + (MULTIPLE >> 1)) / MULTIPLE);
+                return _fixedValue >= 0 ? result : -result;
+            }
+        }
 
         #endregion
 

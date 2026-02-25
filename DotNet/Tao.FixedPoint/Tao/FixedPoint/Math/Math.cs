@@ -27,9 +27,14 @@ namespace Tao.FixedPoint
         private const int LOOKUP_FACTOR = 10000;
 
         /// <summary>
+        /// π × LOOKUP_FACTOR，用于 Atan2 象限偏移
+        /// </summary>
+        private const int PI_SCALED = 31416;
+
+        /// <summary>
         /// 三角函数查表周期 (= MULTIPLE × 2π × LOOKUP_FACTOR)
         /// </summary>
-        private const long TRIG_TABLE_PERIOD = FixedPoint.MULTIPLE * 62832L;
+        private const long TRIG_TABLE_PERIOD = FixedPoint.MULTIPLE * (2L * PI_SCALED);
 
         /// <summary>
         /// 自然对数 ln(2) ≈ 0.693 (Q10 原始值 710)
@@ -704,7 +709,7 @@ namespace Tao.FixedPoint
                     signMultiplier = -1;
                 }
 
-                angleOffset = -31416;
+                angleOffset = -PI_SCALED;
             }
             else
             {
