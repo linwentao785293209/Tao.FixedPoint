@@ -875,21 +875,27 @@ namespace Tao.FixedPoint
         #region 角度相关
 
         /// <summary>
-        /// 将角度转换为弧度 (比常量 Deg2Rad 精度更高)
+        /// 将角度转换为弧度 (单次四舍五入除法，避免分步运算的截断累积误差)
         /// </summary>
         /// <param name="degrees">角度值</param>
         public static FixedPoint DegreesToRadians(FixedPoint degrees)
         {
-            return degrees * FixedPoint.Pi / Deg180;
+            long num = degrees.FixedValue * FixedPoint.Pi.FixedValue;
+            long den = Deg180.FixedValue;
+            long half = den >> 1;
+            return new FixedPoint(num >= 0 ? (num + half) / den : (num - half) / den);
         }
 
         /// <summary>
-        /// 将弧度转换为角度 (比常量 Rad2Deg 精度更高)
+        /// 将弧度转换为角度 (单次四舍五入除法，避免分步运算的截断累积误差)
         /// </summary>
         /// <param name="radians">弧度值</param>
         public static FixedPoint RadiansToDegrees(FixedPoint radians)
         {
-            return radians * Deg180 / FixedPoint.Pi;
+            long num = radians.FixedValue * Deg180.FixedValue;
+            long den = FixedPoint.Pi.FixedValue;
+            long half = den >> 1;
+            return new FixedPoint(num >= 0 ? (num + half) / den : (num - half) / den);
         }
 
         /// <summary>

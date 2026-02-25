@@ -284,5 +284,103 @@ namespace Tao.FixedPoint.UnityTest
         }
 
         #endregion
+
+        #region 特殊角度精确值 (通过 DegreesToRadians 路径，确定性回归测试)
+
+        [Test]
+        public void SinCos_0Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(0));
+            Assert.AreEqual(0L, Math.Sin(rad).FixedValue, "Sin(0°)");
+            Assert.AreEqual(1024L, Math.Cos(rad).FixedValue, "Cos(0°)");
+        }
+
+        [Test]
+        public void SinCos_30Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(30));
+            Assert.AreEqual(512L, Math.Sin(rad).FixedValue, "Sin(30°)");
+            Assert.AreEqual(887L, Math.Cos(rad).FixedValue, "Cos(30°)");
+        }
+
+        [Test]
+        public void SinCos_45Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(45));
+            Assert.AreEqual(724L, Math.Sin(rad).FixedValue, "Sin(45°)");
+            Assert.AreEqual(724L, Math.Cos(rad).FixedValue, "Cos(45°)");
+        }
+
+        [Test]
+        public void SinCos_60Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(60));
+            Assert.AreEqual(887L, Math.Sin(rad).FixedValue, "Sin(60°)");
+            Assert.AreEqual(512L, Math.Cos(rad).FixedValue, "Cos(60°)");
+        }
+
+        [Test]
+        public void SinCos_90Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(90));
+            Assert.AreEqual(1024L, Math.Sin(rad).FixedValue, "Sin(90°)");
+            Assert.AreEqual(0L, Math.Cos(rad).FixedValue, "Cos(90°)");
+        }
+
+        [Test]
+        public void SinCos_120Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(120));
+            Assert.AreEqual(887L, Math.Sin(rad).FixedValue, "Sin(120°)");
+            Assert.AreEqual(-512L, Math.Cos(rad).FixedValue, "Cos(120°)");
+        }
+
+        [Test]
+        public void SinCos_150Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(150));
+            Assert.AreEqual(512L, Math.Sin(rad).FixedValue, "Sin(150°)");
+            Assert.AreEqual(-887L, Math.Cos(rad).FixedValue, "Cos(150°)");
+        }
+
+        [Test]
+        public void SinCos_180Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(180));
+            Assert.AreEqual(0L, Math.Sin(rad).FixedValue, "Sin(180°)");
+            Assert.AreEqual(-1024L, Math.Cos(rad).FixedValue, "Cos(180°)");
+        }
+
+        [Test]
+        public void SinCos_270Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(270));
+            Assert.AreEqual(-1024L, Math.Sin(rad).FixedValue, "Sin(270°)");
+            Assert.AreEqual(0L, Math.Cos(rad).FixedValue, "Cos(270°)");
+        }
+
+        [Test]
+        public void SinCos_360Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(360));
+            Assert.AreEqual(0L, Math.Sin(rad).FixedValue, "Sin(360°)");
+            Assert.AreEqual(1024L, Math.Cos(rad).FixedValue, "Cos(360°)");
+        }
+
+        [Test]
+        public void Tan_45Deg_ReturnsOne()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(45));
+            Assert.AreEqual(1024L, Math.Tan(rad).FixedValue, "Tan(45°)");
+        }
+
+        [Test]
+        public void Tan_90Deg_Saturates()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(90));
+            Assert.AreEqual(FixedPoint.MaxValue.FixedValue, Math.Tan(rad).FixedValue, "Tan(90°)");
+        }
+
+        #endregion
     }
 }

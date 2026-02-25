@@ -387,5 +387,139 @@ namespace Tao.FixedPoint.DotNetTest
         }
 
         #endregion
+
+        #region 特殊角度精确值 (通过 DegreesToRadians 路径，确定性回归测试)
+
+        /// <summary>
+        /// Sin(0°) = 0, Cos(0°) = 1 → 精确值
+        /// </summary>
+        [TestMethod]
+        public void SinCos_0Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(0));
+            Assert.AreEqual(0L, Math.Sin(rad).FixedValue, "Sin(0°)");
+            Assert.AreEqual(1024L, Math.Cos(rad).FixedValue, "Cos(0°)");
+        }
+
+        /// <summary>
+        /// Sin(30°) = 0.5 (FixedValue=512), Cos(30°) ≈ √3/2 (FixedValue=887)
+        /// </summary>
+        [TestMethod]
+        public void SinCos_30Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(30));
+            Assert.AreEqual(512L, Math.Sin(rad).FixedValue, "Sin(30°)");
+            Assert.AreEqual(887L, Math.Cos(rad).FixedValue, "Cos(30°)");
+        }
+
+        /// <summary>
+        /// Sin(45°) ≈ Cos(45°) ≈ √2/2 (FixedValue=724)
+        /// </summary>
+        [TestMethod]
+        public void SinCos_45Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(45));
+            Assert.AreEqual(724L, Math.Sin(rad).FixedValue, "Sin(45°)");
+            Assert.AreEqual(724L, Math.Cos(rad).FixedValue, "Cos(45°)");
+        }
+
+        /// <summary>
+        /// Sin(60°) ≈ √3/2 (FixedValue=887), Cos(60°) = 0.5 (FixedValue=512)
+        /// </summary>
+        [TestMethod]
+        public void SinCos_60Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(60));
+            Assert.AreEqual(887L, Math.Sin(rad).FixedValue, "Sin(60°)");
+            Assert.AreEqual(512L, Math.Cos(rad).FixedValue, "Cos(60°)");
+        }
+
+        /// <summary>
+        /// Sin(90°) = 1 (FixedValue=1024), Cos(90°) = 0 → 精确值
+        /// </summary>
+        [TestMethod]
+        public void SinCos_90Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(90));
+            Assert.AreEqual(1024L, Math.Sin(rad).FixedValue, "Sin(90°)");
+            Assert.AreEqual(0L, Math.Cos(rad).FixedValue, "Cos(90°)");
+        }
+
+        /// <summary>
+        /// Sin(120°) ≈ √3/2 (FixedValue=887), Cos(120°) = -0.5 (FixedValue=-512)
+        /// </summary>
+        [TestMethod]
+        public void SinCos_120Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(120));
+            Assert.AreEqual(887L, Math.Sin(rad).FixedValue, "Sin(120°)");
+            Assert.AreEqual(-512L, Math.Cos(rad).FixedValue, "Cos(120°)");
+        }
+
+        /// <summary>
+        /// Sin(150°) = 0.5 (FixedValue=512), Cos(150°) ≈ -√3/2 (FixedValue=-887)
+        /// </summary>
+        [TestMethod]
+        public void SinCos_150Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(150));
+            Assert.AreEqual(512L, Math.Sin(rad).FixedValue, "Sin(150°)");
+            Assert.AreEqual(-887L, Math.Cos(rad).FixedValue, "Cos(150°)");
+        }
+
+        /// <summary>
+        /// Sin(180°) = 0, Cos(180°) = -1 → 精确值
+        /// </summary>
+        [TestMethod]
+        public void SinCos_180Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(180));
+            Assert.AreEqual(0L, Math.Sin(rad).FixedValue, "Sin(180°)");
+            Assert.AreEqual(-1024L, Math.Cos(rad).FixedValue, "Cos(180°)");
+        }
+
+        /// <summary>
+        /// Sin(270°) = -1 (FixedValue=-1024), Cos(270°) = 0 → 精确值
+        /// </summary>
+        [TestMethod]
+        public void SinCos_270Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(270));
+            Assert.AreEqual(-1024L, Math.Sin(rad).FixedValue, "Sin(270°)");
+            Assert.AreEqual(0L, Math.Cos(rad).FixedValue, "Cos(270°)");
+        }
+
+        /// <summary>
+        /// Sin(360°) = 0, Cos(360°) = 1 → 精确值 (周期性)
+        /// </summary>
+        [TestMethod]
+        public void SinCos_360Deg_Exact()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(360));
+            Assert.AreEqual(0L, Math.Sin(rad).FixedValue, "Sin(360°)");
+            Assert.AreEqual(1024L, Math.Cos(rad).FixedValue, "Cos(360°)");
+        }
+
+        /// <summary>
+        /// Tan(45°) = 1 → FixedValue=1024 精确值
+        /// </summary>
+        [TestMethod]
+        public void Tan_45Deg_ReturnsOne()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(45));
+            Assert.AreEqual(1024L, Math.Tan(rad).FixedValue, "Tan(45°)");
+        }
+
+        /// <summary>
+        /// Tan(90°): Cos(90°) = 0，除法饱和到 MaxValue
+        /// </summary>
+        [TestMethod]
+        public void Tan_90Deg_Saturates()
+        {
+            FixedPoint rad = Math.DegreesToRadians(new FixedPoint(90));
+            Assert.AreEqual(FixedPoint.MaxValue.FixedValue, Math.Tan(rad).FixedValue, "Tan(90°)");
+        }
+
+        #endregion
     }
 }
