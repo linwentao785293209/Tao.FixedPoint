@@ -240,6 +240,7 @@ namespace Tao.FixedPoint
         public static FixedPoint SignedAngle(Vector2 from, Vector2 to)
         {
             FixedPoint angle = Angle(from, to);
+            // 2D 叉积的 z 分量决定旋转方向: 正=逆时针, 负=顺时针
             FixedPoint sign = Math.Sign(from.x * to.y - from.y * to.x);
             return angle * sign;
         }
@@ -278,6 +279,7 @@ namespace Tao.FixedPoint
             FixedPoint dx = target.x - current.x;
             FixedPoint dy = target.y - current.y;
             FixedPoint sqrDist = dx * dx + dy * dy;
+            // 已到达 或 剩余距离 ≤ 步长 → 直接返回目标（用平方比较避免开方）
             if (sqrDist == FixedPoint.Zero
                 || (maxDistanceDelta >= FixedPoint.Zero && sqrDist <= maxDistanceDelta * maxDistanceDelta))
             {
@@ -397,13 +399,17 @@ namespace Tao.FixedPoint
             ref Vector2 currentVelocity, FixedPoint smoothTime, FixedPoint fixedDeltaTime,
             FixedPoint maxSpeed)
         {
-            // 弹簧阻尼系统: omega = 2/smoothTime 为角频率
+            // 临界阻尼弹簧模型: omega = 2/smoothTime 为角频率
             smoothTime = Math.Max(FixedPoint.Epsilon, smoothTime);
             FixedPoint omega = FixedPoint.Two / smoothTime;
             FixedPoint dampingInput = omega * fixedDeltaTime;
+
+            // 衰减因子：1 / (1 + x + c2·x² + c3·x³)，近似 e^(-omega·dt)
             FixedPoint decayFactor = FixedPoint.One /
                              (FixedPoint.One + dampingInput + Math.SmoothDampC2 * dampingInput * dampingInput
                               + Math.SmoothDampC3 * dampingInput * dampingInput * dampingInput);
+
+            // 限制最大变化量，防止高速抖动
             FixedPoint dx = current.x - target.x;
             FixedPoint dy = current.y - target.y;
             Vector2 original = target;
@@ -417,6 +423,7 @@ namespace Tao.FixedPoint
                 dy = dy / dist * maxChange;
             }
 
+            // 更新速度和输出值
             target.x = current.x - dx;
             target.y = current.y - dy;
             FixedPoint tempX = (currentVelocity.x + omega * dx) * fixedDeltaTime;
@@ -425,6 +432,8 @@ namespace Tao.FixedPoint
             currentVelocity.y = (currentVelocity.y - omega * tempY) * decayFactor;
             FixedPoint outX = target.x + (dx + tempX) * decayFactor;
             FixedPoint outY = target.y + (dy + tempY) * decayFactor;
+
+            // 防止过冲：点积 > 0 表示输出越过了目标
             FixedPoint origDx = original.x - current.x;
             FixedPoint origDy = original.y - current.y;
             FixedPoint outDx = outX - original.x;

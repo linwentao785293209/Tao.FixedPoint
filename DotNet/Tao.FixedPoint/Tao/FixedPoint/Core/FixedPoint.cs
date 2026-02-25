@@ -113,6 +113,7 @@ namespace Tao.FixedPoint
         {
             get
             {
+                // 对绝对值加 MULTIPLE/2 后除以 MULTIPLE 实现四舍五入，再还原符号
                 long abs = _fixedValue >= 0 ? _fixedValue : -_fixedValue;
                 int result = (int)((abs + (MULTIPLE >> 1)) / MULTIPLE);
                 return _fixedValue >= 0 ? result : -result;

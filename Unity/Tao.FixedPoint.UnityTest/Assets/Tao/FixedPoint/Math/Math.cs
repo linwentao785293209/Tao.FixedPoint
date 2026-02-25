@@ -156,6 +156,7 @@ namespace Tao.FixedPoint
 
             if (exponent < 0)
             {
+                // int.MinValue 取反会溢出，拆分为 MaxValue + 1
                 if (exponent == int.MinValue)
                 {
                     return FixedPoint.One / (Pow(value, int.MaxValue) * value);
@@ -164,6 +165,7 @@ namespace Tao.FixedPoint
                 return FixedPoint.One / Pow(value, -exponent);
             }
 
+            // 分治快速幂: v^n = v^(n/2) × v^(n/2) × (n 为奇数时额外乘 v)
             FixedPoint half = Pow(value, exponent >> 1);
             return (exponent & 1) == 1 ? value * half * half : half * half;
         }
@@ -222,10 +224,15 @@ namespace Tao.FixedPoint
             // 使任意输入的初始偏差控制在 2 倍以内，保证快速收敛
             int bits = 0;
             long temp = v;
-            while (temp > 0) { bits++; temp >>= 1; }
+            while (temp > 0)
+            {
+                bits++;
+                temp >>= 1;
+            }
+
             long estimate = 1L << ((bits + FixedPoint.BIT_MOVE_COUNT) / 2);
 
-            // 牛顿迭代: e(n+1) = (e(n) + v × MULTIPLE / e(n)) / 2
+            // 牛顿迭代: e(n+1) = (e(n) + S/e(n)) / 2，其中 S = v × MULTIPLE
             // 二次收敛下 8 次迭代远超 Q10 的 10 位精度需求
             for (int i = 0; i < 8; i++)
             {
@@ -256,7 +263,12 @@ namespace Tao.FixedPoint
 
             int bits = 0;
             long temp = v;
-            while (temp > 0) { bits++; temp >>= 1; }
+            while (temp > 0)
+            {
+                bits++;
+                temp >>= 1;
+            }
+
             long estimate = 1L << ((bits + FixedPoint.BIT_MOVE_COUNT) / 2);
 
             for (int i = 0; i < iterations; i++)
@@ -315,14 +327,17 @@ namespace Tao.FixedPoint
                 integerPart--;
             }
 
-            // 迭代平方法求小数部分：每次平方后检查是否 ≥ 2.0
+            // 迭代平方法逐位求小数部分（共 BIT_MOVE_COUNT 位）：
+            // 每轮将 normalizedValue 平方，若结果 ≥ 2.0 则该位为 1 并除以 2 重新归一化
             long fractionalBits = 0;
             for (int i = 0; i < FixedPoint.BIT_MOVE_COUNT; i++)
             {
+                // 平方后重新落入 [1.0, 4.0) 范围
                 normalizedValue = normalizedValue * normalizedValue / FixedPoint.MULTIPLE;
                 fractionalBits <<= 1;
                 if (normalizedValue >= 2 * FixedPoint.MULTIPLE)
                 {
+                    // ≥ 2.0 → 这一位是 1，除以 2 归一化回 [1.0, 2.0)
                     normalizedValue >>= 1;
                     fractionalBits |= 1;
                 }
@@ -585,18 +600,23 @@ namespace Tao.FixedPoint
         {
             // 归约弧度到 [0, TRIG_TABLE_PERIOD)，防止乘 NomMul 时 long 溢出
             long scaledRadians = radians.FixedValue % TRIG_TABLE_PERIOD;
-            if (scaledRadians < 0) scaledRadians += TRIG_TABLE_PERIOD;
+            if (scaledRadians < 0)
+            {
+                scaledRadians += TRIG_TABLE_PERIOD;
+            }
 
             // 将弧度值映射到查找表索引空间
             scaledRadians *= SinCosLookupTable.NomMul;
 
+            // 分离整数索引和插值余数
             long tableIndex = scaledRadians / TRIG_TABLE_PERIOD;
             long interpolationRemainder = scaledRadians - tableIndex * TRIG_TABLE_PERIOD;
 
+            // Mask 保证索引在表长度内循环（表长度为 2 的幂）
             int currentIndex = (int)tableIndex & SinCosLookupTable.Mask;
             int nextIndex = (currentIndex + 1) & SinCosLookupTable.Mask;
 
-            // 线性插值: table[i] + (table[i+1] − table[i]) × remainder / period
+            // 共享索引对 Sin 和 Cos 同时做线性插值，比分别调用各省一半索引计算
             long sinValue = SinCosLookupTable.SinTable[currentIndex]
                 + ((long)SinCosLookupTable.SinTable[nextIndex] - SinCosLookupTable.SinTable[currentIndex])
                 * interpolationRemainder / TRIG_TABLE_PERIOD;
@@ -847,20 +867,29 @@ namespace Tao.FixedPoint
             FixedPoint maxSpeed)
         {
             smoothTime = Max(FixedPoint.Epsilon, smoothTime);
-            // 弹簧阻尼系统: omega = 2/smoothTime 为角频率
+
+            // 临界阻尼弹簧模型: omega = 2/smoothTime 为角频率
             FixedPoint omega = FixedPoint.Two / smoothTime;
             FixedPoint dampingInput = omega * deltaTime;
+
+            // 衰减因子：1 / (1 + x + c2·x² + c3·x³)，近似 e^(-omega·dt)
             FixedPoint decayFactor = FixedPoint.One /
                              (FixedPoint.One + dampingInput + SmoothDampC2 * dampingInput * dampingInput
                               + SmoothDampC3 * dampingInput * dampingInput * dampingInput);
+
+            // 限制最大变化量，防止高速抖动
             FixedPoint change = current - target;
             FixedPoint originalTo = target;
             FixedPoint maxChange = maxSpeed * smoothTime;
             change = Clamp(change, -maxChange, maxChange);
             target = current - change;
+
+            // 更新速度和输出值
             FixedPoint temp = (currentVelocity + omega * change) * deltaTime;
             currentVelocity = (currentVelocity - omega * temp) * decayFactor;
             FixedPoint output = target + (change + temp) * decayFactor;
+
+            // 防止过冲：如果输出越过了目标，直接钳位到目标
             if ((originalTo - current > FixedPoint.Zero) == (output > originalTo))
             {
                 output = originalTo;
@@ -880,8 +909,10 @@ namespace Tao.FixedPoint
         /// <param name="degrees">角度值</param>
         public static FixedPoint DegreesToRadians(FixedPoint degrees)
         {
+            // radians = degrees × π / 180，合并为单次除法减少截断误差
             long num = degrees.FixedValue * FixedPoint.Pi.FixedValue;
             long den = Deg180.FixedValue;
+            // 加减 den/2 实现四舍五入，符号决定舍入方向
             long half = den >> 1;
             return new FixedPoint(num >= 0 ? (num + half) / den : (num - half) / den);
         }
@@ -892,6 +923,7 @@ namespace Tao.FixedPoint
         /// <param name="radians">弧度值</param>
         public static FixedPoint RadiansToDegrees(FixedPoint radians)
         {
+            // degrees = radians × 180 / π，合并为单次除法减少截断误差
             long num = radians.FixedValue * Deg180.FixedValue;
             long den = FixedPoint.Pi.FixedValue;
             long half = den >> 1;
@@ -1003,7 +1035,11 @@ namespace Tao.FixedPoint
             // 向下取整除法，确保余数 r ∈ [0, divisor)
             long q = scaledNumerator / divisor;
             long r = scaledNumerator - q * divisor;
-            if (r < 0) { q--; r += divisor; }
+            if (r < 0)
+            {
+                q--;
+                r += divisor;
+            }
 
             int rawIndex = (int)q + AcosLookupTable.HalfCount;
 
@@ -1039,7 +1075,10 @@ namespace Tao.FixedPoint
         {
             // 归约分子到 [0, TRIG_TABLE_PERIOD)，防止乘 NomMul 时 long 溢出
             numerator %= TRIG_TABLE_PERIOD;
-            if (numerator < 0) numerator += TRIG_TABLE_PERIOD;
+            if (numerator < 0)
+            {
+                numerator += TRIG_TABLE_PERIOD;
+            }
 
             // 将弧度值映射到查找表索引空间
             numerator *= SinCosLookupTable.NomMul;
@@ -1067,9 +1106,10 @@ namespace Tao.FixedPoint
                 throw new DivideByZeroException("除数不能为0");
             }
 
-            // 提取符号位：异号为1，同号为0
+            // 整数除法前加 divisor/2 可实现四舍五入（远离零）
+            // 结果为负时需减 divisor/2 而非加，因此根据被除数和除数的符号关系调整
             long signBit = (long)((ulong)((dividend ^ divisor) & long.MinValue) >> 63);
-            // 异号时 signCorrection = -1 (向零舍入)，同号时 signCorrection = 1 (远离零舍入)
+            // 异号(signBit=1) → 减半(signCorrection=-1)；同号(signBit=0) → 加半(signCorrection=+1)
             long signCorrection = signBit * -2L + 1L;
             long roundingOffset = unchecked((divisor / 2L) * signCorrection);
             return unchecked(dividend + roundingOffset) / divisor;
@@ -1087,9 +1127,8 @@ namespace Tao.FixedPoint
                 throw new DivideByZeroException("除数不能为0");
             }
 
-            // 提取符号位：异号为1，同号为0
+            // 同 long 版本：同号加、异号减 divisor/2 实现四舍五入
             int signBit = (int)((uint)((dividend ^ divisor) & int.MinValue) >> 31);
-            // 异号时 signCorrection = -1 (向零舍入)，同号时 signCorrection = 1 (远离零舍入)
             int signCorrection = signBit * -2 + 1;
             int roundingOffset = unchecked((divisor / 2) * signCorrection);
             return unchecked(dividend + roundingOffset) / divisor;

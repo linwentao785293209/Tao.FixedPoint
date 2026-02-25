@@ -30,6 +30,7 @@ namespace Tao.FixedPoint
         public RandomSeed(int seedId)
         {
             SeedId = seedId;
+            // Xorshift 要求状态非零，seedId == 0 时使用 Marsaglia 推荐的默认种子
             _state = seedId != 0 ? (uint)seedId : 2463534242u;
         }
 
@@ -68,6 +69,7 @@ namespace Tao.FixedPoint
                 throw new ArgumentOutOfRangeException(nameof(min), "定点范围超出 int 支持区间，无法安全转换为整数随机范围。");
             }
 
+            // 在原始值空间随机后除以 MULTIPLE 还原为整数
             return Range((int)minFixValue, (int)maxFixValue) / FixedPoint.MULTIPLE;
         }
 
@@ -80,6 +82,7 @@ namespace Tao.FixedPoint
         /// </summary>
         private uint NextUInt()
         {
+            // Xorshift32 三步位移 (13, 17, 5) —— Marsaglia 的经典参数组合
             _state ^= _state << 13;
             _state ^= _state >> 17;
             _state ^= _state << 5;

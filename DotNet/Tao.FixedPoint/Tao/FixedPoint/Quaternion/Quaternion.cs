@@ -172,6 +172,7 @@ namespace Tao.FixedPoint
         public static Quaternion AngleAxis(FixedPoint angle, Vector3 axis)
         {
             axis = Vector3.Normalize(axis);
+            // 四元数公式: q = (axis·sin(θ/2), cos(θ/2))
             FixedPoint halfRad = Math.DegreesToRadians(angle) >> 1;
             FixedPoint sinHalf = Math.Sin(halfRad);
             return new Quaternion(axis.x * sinHalf, axis.y * sinHalf, axis.z * sinHalf, Math.Cos(halfRad));
@@ -457,6 +458,7 @@ namespace Tao.FixedPoint
                 return to;
             }
 
+            // 插值系数 t = min(1, 步长/总角度)，不超过 1 确保不会越过目标
             FixedPoint t = Math.Min(FixedPoint.One, maxDegreesDelta / angle);
             return SlerpUnclamped(from, to, t);
         }

@@ -339,6 +339,7 @@ namespace Tao.FixedPoint
             FixedPoint rz = m20 * point.x + m21 * point.y + m22 * point.z + m23;
             FixedPoint rw = m30 * point.x + m31 * point.y + m32 * point.z + m33;
 
+            // 透视除法: w ≠ 0 且 w ≠ 1 时需要除以 w 还原齐次坐标
             if (rw != FixedPoint.Zero && rw != FixedPoint.One)
             {
                 rx /= rw;
@@ -426,6 +427,7 @@ namespace Tao.FixedPoint
         /// <param name="rhs">右矩阵</param>
         public static Matrix4x4 operator *(Matrix4x4 lhs, Matrix4x4 rhs)
         {
+            // 标准 4×4 矩阵乘法: result[i,j] = Σ lhs[i,k] × rhs[k,j]
             Matrix4x4 result = default;
             result.m00 = lhs.m00 * rhs.m00 + lhs.m01 * rhs.m10 + lhs.m02 * rhs.m20 + lhs.m03 * rhs.m30;
             result.m01 = lhs.m00 * rhs.m01 + lhs.m01 * rhs.m11 + lhs.m02 * rhs.m21 + lhs.m03 * rhs.m31;

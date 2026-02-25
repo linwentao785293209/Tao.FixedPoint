@@ -310,6 +310,7 @@ namespace Tao.FixedPoint
         public static FixedPoint SignedAngle(Vector3 from, Vector3 to, Vector3 axis)
         {
             FixedPoint angle = Angle(from, to);
+            // 叉积 from×to 的方向与 axis 的点积决定旋转方向
             FixedPoint crossX = from.y * to.z - from.z * to.y;
             FixedPoint crossY = from.z * to.x - from.x * to.z;
             FixedPoint crossZ = from.x * to.y - from.y * to.x;
@@ -369,6 +370,7 @@ namespace Tao.FixedPoint
             FixedPoint dy = target.y - current.y;
             FixedPoint dz = target.z - current.z;
             FixedPoint sqrDist = dx * dx + dy * dy + dz * dz;
+            // 已到达 或 剩余距离 ≤ 步长 → 直接返回目标（用平方比较避免开方）
             if (sqrDist == FixedPoint.Zero
                 || (maxDistanceDelta >= FixedPoint.Zero && sqrDist <= maxDistanceDelta * maxDistanceDelta))
             {
@@ -433,6 +435,7 @@ namespace Tao.FixedPoint
                 return _zeroVector;
             }
 
+            // 投影公式: proj = n × (v·n / |n|²)
             FixedPoint dot = Dot(vector, onNormal);
             return new Vector3(
                 onNormal.x * dot / sqrMag,
@@ -453,6 +456,7 @@ namespace Tao.FixedPoint
                 return vector;
             }
 
+            // 平面投影 = v - n × (v·n / |n|²)，即减去法线方向上的分量
             FixedPoint dot = Dot(vector, planeNormal);
             return new Vector3(
                 vector.x - planeNormal.x * dot / sqrMag,
@@ -537,13 +541,17 @@ namespace Tao.FixedPoint
             ref Vector3 currentVelocity, FixedPoint smoothTime, FixedPoint deltaTime,
             FixedPoint maxSpeed)
         {
-            // 弹簧阻尼系统: omega = 2/smoothTime 为角频率
+            // 临界阻尼弹簧模型: omega = 2/smoothTime 为角频率
             smoothTime = Math.Max(FixedPoint.Epsilon, smoothTime);
             FixedPoint omega = FixedPoint.Two / smoothTime;
             FixedPoint dampingInput = omega * deltaTime;
+
+            // 衰减因子：1 / (1 + x + c2·x² + c3·x³)，近似 e^(-omega·dt)
             FixedPoint decayFactor = FixedPoint.One /
                              (FixedPoint.One + dampingInput + Math.SmoothDampC2 * dampingInput * dampingInput
                               + Math.SmoothDampC3 * dampingInput * dampingInput * dampingInput);
+
+            // 限制最大变化量，防止高速抖动
             FixedPoint dx = current.x - target.x;
             FixedPoint dy = current.y - target.y;
             FixedPoint dz = current.z - target.z;
@@ -559,6 +567,7 @@ namespace Tao.FixedPoint
                 dz = dz / dist * maxChange;
             }
 
+            // 更新速度和输出值
             target.x = current.x - dx;
             target.y = current.y - dy;
             target.z = current.z - dz;
@@ -571,6 +580,8 @@ namespace Tao.FixedPoint
             FixedPoint outX = target.x + (dx + tempX) * decayFactor;
             FixedPoint outY = target.y + (dy + tempY) * decayFactor;
             FixedPoint outZ = target.z + (dz + tempZ) * decayFactor;
+
+            // 防止过冲：点积 > 0 表示输出越过了目标
             FixedPoint origDx = original.x - current.x;
             FixedPoint origDy = original.y - current.y;
             FixedPoint origDz = original.z - current.z;

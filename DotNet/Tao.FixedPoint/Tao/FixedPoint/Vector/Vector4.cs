@@ -276,6 +276,7 @@ namespace Tao.FixedPoint
             FixedPoint dz = target.z - current.z;
             FixedPoint dw = target.w - current.w;
             FixedPoint sqrDist = dx * dx + dy * dy + dz * dz + dw * dw;
+            // 已到达 或 剩余距离 ≤ 步长 → 直接返回目标（用平方比较避免开方）
             if (sqrDist == FixedPoint.Zero
                 || (maxDistanceDelta >= FixedPoint.Zero && sqrDist <= maxDistanceDelta * maxDistanceDelta))
             {
@@ -328,6 +329,7 @@ namespace Tao.FixedPoint
                 return _zeroVector;
             }
 
+            // 投影公式: proj = n × (v·n / |n|²)
             FixedPoint dot = Dot(vector, onNormal);
             return new Vector4(
                 onNormal.x * dot / sqrMag,
